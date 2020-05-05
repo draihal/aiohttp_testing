@@ -17,7 +17,7 @@ account = Table(
            Enum('RUB', 'EUR', 'USD', name='currency_choices'),
            nullable=False),
     Column('overdraft', Boolean, default=False, nullable=False),
-    Column('balance', Numeric(10, 2), nullable=True),
+    Column('balance', Numeric(10, 2), nullable=True, default=0),
     Column('create_date',
            DateTime, nullable=False,
            default=datetime.utcnow)
