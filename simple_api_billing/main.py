@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from views import ping, index
+from views import account_get, account_post, invoice_post
 from settings import config
 from db import close_pg, init_pg
 
@@ -8,8 +8,10 @@ from aiohttp_swagger import *
 
 
 app = web.Application()
-app.router.add_route('GET', "/", index)
-app.router.add_route('GET', "/ping", ping)
+
+app.router.add_route('GET', "/account", account_get)
+app.router.add_route('POST', "/account", account_post)
+app.router.add_route('POST', "/invoice", invoice_post)
 
 
 app.on_startup.append(init_pg)

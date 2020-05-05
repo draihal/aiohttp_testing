@@ -10,6 +10,7 @@ aiohttp = "~=3.6"
 aiohttp-swagger = "*"
 pyyaml = "*"
 aiopg = {extras = ["sa"],version = "*"}
+aiohttp-validate = "*"
 
 [requires]
 python_version = "3.6"
