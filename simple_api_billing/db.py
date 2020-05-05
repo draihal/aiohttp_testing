@@ -1,16 +1,9 @@
-import enum
 from datetime import datetime
-
+import aiopg.sa
 from sqlalchemy import (
     MetaData, Table, Column, ForeignKey,
     Integer, DateTime, Enum, Boolean, Numeric
 )
-
-
-class CurrencyChoicesEnum(enum.Enum):
-    RUB = 'RUB'
-    EUR = 'EUR'
-    USD = 'USD'
 
 
 meta = MetaData()
@@ -21,13 +14,13 @@ account = Table(
 
     Column('id', Integer, primary_key=True),
     Column('currency',
-           Enum(CurrencyChoicesEnum),
-           default=CurrencyChoicesEnum.RUB, nullable=False),
+           Enum('RUB', 'EUR', 'USD', name='currency_choices'),
+           nullable=False),
     Column('overdraft', Boolean, default=False, nullable=False),
     Column('balance', Numeric(10, 2), nullable=True),
     Column('create_date',
            DateTime, nullable=False,
-           default=datetime.strftime(datetime.today(), "%b %d %Y"))
+           default=datetime.utcnow)
 )
 
 invoice = Table(
@@ -46,3 +39,22 @@ invoice = Table(
            DateTime, nullable=False,
            default=datetime.utcnow)
 )
+
+
+async def init_pg(app):
+    conf = app['config']['postgres']
+    engine = await aiopg.sa.create_engine(
+        database=conf['database'],
+        user=conf['user'],
+        password=conf['password'],
+        host=conf['host'],
+        port=conf['port'],
+        minsize=conf['minsize'],
+        maxsize=conf['maxsize'],
+    )
+    app['db'] = engine
+
+
+async def close_pg(app):
+    app['db'].close()
+    await app['db'].wait_closed()
