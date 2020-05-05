@@ -33,7 +33,7 @@ invoice = Table(
     Column('account_id_to',
            Integer,
            ForeignKey('account.id', ondelete='CASCADE')),
-    Column('amount', Numeric(10, 2), nullable=True),
+    Column('amount', Numeric(10, 2), nullable=True),  # TODO: add more base?
     Column('transfer_status', Boolean, default=False, nullable=False),
     Column('create_date',
            DateTime, nullable=False,

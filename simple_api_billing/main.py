@@ -18,6 +18,6 @@ app.on_startup.append(init_pg)
 app.on_cleanup.append(close_pg)
 
 app['config'] = config
-setup_swagger(app, swagger_url="/api/v1", ui_version=2)
+setup_swagger(app, swagger_url="/api/v1")
 
 web.run_app(app, host="127.0.0.1")

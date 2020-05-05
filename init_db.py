@@ -20,7 +20,7 @@ def sample_data(engine):
          'balance': 10.05}
     ])
     conn.execute(account.insert(), [
-        {'currency': 'USD',
+        {'currency': 'EUR',
          'overdraft': False,
          'balance': 10000.05}
     ])
