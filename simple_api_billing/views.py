@@ -1,8 +1,9 @@
 from aiohttp import web
-import db
 import json
 from decimal import *
-from validation import parse_boolean, is_digit, is_decimal, is_boolean, is_currency_type
+import db as db
+from validation import (
+    parse_boolean, is_digit, is_decimal, is_boolean, is_currency_type)
 from exchange import exchange
 
 getcontext().prec = 24   # TODO: 18 or 2 or ?
@@ -59,7 +60,7 @@ async def account_post(request):
         "201":
             description: Successful operation. Account created.
         "400":
-            description: Bad request. Need args - integer(currency), boolean(overdraft).
+            description: Bad request. Need args - currency, boolean(overdraft).
         "405":
             description: Invalid HTTP Method.
         "500":
@@ -69,9 +70,9 @@ async def account_post(request):
         async with request.app['db'].acquire() as conn:
             currency = request.query['currency']
             overdraft = parse_boolean(request.query['overdraft'])
-            if not is_currency_type(currency) or not is_boolean(overdraft):
+            if not is_currency_type(currency) or not is_boolean(request.query['overdraft']):
                 response_obj = {
-                    'status': 'failed', 'reason': 'Bad request. Need integer(currency) and boolean(overdraft).'}
+                    'status': 'failed', 'reason': f'Bad request. Need currency and boolean(overdraft).'}
                 return web.Response(text=json.dumps(response_obj), status=400, content_type='application/json')
             cursor = await conn.execute(db.account.insert().values(currency=currency, overdraft=overdraft))
             record = await cursor.fetchall()
@@ -95,6 +96,8 @@ async def invoice_post(request):
             description: Successful operation. Invoice created.
         "400":
             description: Bad request. Need args - integer(account_id_from), integer(account_id_to), integer(amount).
+        "403":
+            description: Not enough balance.
         "404":
             description: Not found.
         "405":
